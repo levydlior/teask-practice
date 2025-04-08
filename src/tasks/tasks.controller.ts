@@ -7,26 +7,33 @@ import {
   // Param,
   // Delete,
   UseGuards,
+  Delete,
+  Param,
+  Get,
+  Req,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 // import { UpdateTaskDto } from './dto/update-task.dto';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
-
+import { Request } from 'express';
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  async create(@Body() createTaskDto: CreateTaskDto, @Req() req: Request) {
+    const user = req.user as { userId: number; email: string };
+    return this.tasksService.create(createTaskDto, user.userId);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.tasksService.findAll();
-  // }
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async findAll(@Req() req: Request) {
+    const user = req.user as { userId: number; email: string };
+    return this.tasksService.findAllForUser(user.userId);
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
@@ -38,8 +45,9 @@ export class TasksController {
   //   return this.tasksService.update(+id, updateTaskDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.tasksService.remove(+id);
-  // }
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async remove(@Param('id') id: string) {
+    return this.tasksService.remove(+id);
+  }
 }

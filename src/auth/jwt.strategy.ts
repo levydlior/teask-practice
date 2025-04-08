@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenBlacklistService } from './token-blacklist.service';
-
+import { Request as ExpressRequest } from 'express';
 interface JwtPayload {
   sub: number;
   email: string;
@@ -23,9 +23,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(req: Request, payload: JwtPayload) {
+  validate(req: ExpressRequest, payload: JwtPayload) {
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-    this.authenticate;
+
     if (!token) {
       throw new UnauthorizedException('No token found');
     }

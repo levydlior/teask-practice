@@ -32,10 +32,11 @@ export class TasksController {
     return this.tasksService.findAllForUser(user.userId);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.tasksService.findOne(+id);
-  // }
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: string) {
+    return this.tasksService.findOne(+id);
+  }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)

@@ -54,9 +54,20 @@ export class TasksService {
       userId: task.user.id,
     }));
   }
-  // findOne(id: number) {
-  //   return `This action returns a #${id} task`;
-  // }
+
+  async findOne(id: number): Promise<TaskResponseDto> {
+    const task = await this.taskRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+    if (!task) throw new NotFoundException(`Task not found`);
+    return {
+      id: task.id,
+      taskName: task.taskName,
+      completed: task.completed,
+      userId: task.user.id,
+    };
+  }
 
   async update(
     id: number,
